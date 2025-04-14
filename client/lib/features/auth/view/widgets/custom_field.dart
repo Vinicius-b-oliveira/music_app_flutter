@@ -5,10 +5,10 @@ class CustomField extends StatelessWidget {
   final TextEditingController controller;
   final bool isObscureText;
   const CustomField({
+    super.key,
     required this.hintText,
     required this.controller,
     this.isObscureText = false,
-    super.key,
   });
 
   @override

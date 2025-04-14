@@ -63,7 +63,7 @@ class _SignupPageState extends State<SignupPage> {
                   ),
 
                   const SizedBox(height: 20),
-                  AuthGradientButton(buttonText: 'Sign Up'),
+                  AuthGradientButton(buttonText: 'Sign Up', onTap: () {}),
                   const SizedBox(height: 20),
 
                   RichText(
