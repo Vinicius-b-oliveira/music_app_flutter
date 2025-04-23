@@ -16,10 +16,8 @@ class LoginPage extends ConsumerStatefulWidget {
 }
 
 class _LoginPageState extends ConsumerState<LoginPage> {
-  bool get isKeyboardOpen => MediaQuery.of(context).viewInsets.bottom > 0;
-
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
   final formKey = GlobalKey<FormState>();
 
   @override
@@ -31,17 +29,20 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isLoading = ref.watch(authViewModelProvider)?.isLoading == true;
+    final isLoading = ref.watch(
+      authViewModelProvider.select((val) => val?.isLoading == true),
+    );
 
     ref.listen(authViewModelProvider, (_, next) {
       next?.when(
         data: (data) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const LoginPage()),
-          );
+          // Navigator.pushAndRemoveUntil(
+          //   context,
+          //   MaterialPageRoute(builder: (context) => const HomePage()),
+          //   (_) => false,
+          // );
         },
-        error: (error, stackTrace) {
+        error: (error, st) {
           showSnackBar(context, error.toString());
         },
         loading: () {},
@@ -49,10 +50,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     });
 
     return Scaffold(
-      appBar: isKeyboardOpen ? null : AppBar(),
+      appBar: AppBar(),
       body:
           isLoading
-              ? Loader()
+              ? const Loader()
               : Padding(
                 padding: const EdgeInsets.all(15.0),
                 child: Form(
@@ -67,27 +68,20 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-
                       const SizedBox(height: 30),
-
-                      Column(
-                        spacing: 15,
-                        children: [
-                          CustomField(
-                            hintText: 'Email',
-                            controller: emailController,
-                          ),
-                          CustomField(
-                            hintText: 'Password',
-                            isObscureText: true,
-                            controller: passwordController,
-                          ),
-                        ],
+                      CustomField(
+                        hintText: 'Email',
+                        controller: emailController,
                       ),
-
+                      const SizedBox(height: 15),
+                      CustomField(
+                        hintText: 'Password',
+                        controller: passwordController,
+                        isObscureText: true,
+                      ),
                       const SizedBox(height: 20),
                       AuthGradientButton(
-                        buttonText: 'Sign In',
+                        buttonText: 'Sign in',
                         onTap: () async {
                           if (formKey.currentState!.validate()) {
                             await ref
@@ -96,23 +90,24 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                   email: emailController.text,
                                   password: passwordController.text,
                                 );
+                          } else {
+                            showSnackBar(context, 'Missing fields!');
                           }
                         },
                       ),
                       const SizedBox(height: 20),
-
                       GestureDetector(
                         onTap: () {
-                          Navigator.pushReplacement(
+                          Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => SignupPage(),
+                              builder: (context) => const SignupPage(),
                             ),
                           );
                         },
                         child: RichText(
                           text: TextSpan(
-                            text: "Don't have an account? ",
+                            text: 'Don\'t have an account? ',
                             style: Theme.of(context).textTheme.titleMedium,
                             children: const [
                               TextSpan(

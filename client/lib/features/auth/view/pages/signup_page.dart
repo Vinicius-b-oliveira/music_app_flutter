@@ -16,11 +16,9 @@ class SignupPage extends ConsumerStatefulWidget {
 }
 
 class _SignupPageState extends ConsumerState<SignupPage> {
-  bool get isKeyboardOpen => MediaQuery.of(context).viewInsets.bottom > 0;
-
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+  final nameController = TextEditingController();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
   final formKey = GlobalKey<FormState>();
 
   @override
@@ -33,18 +31,20 @@ class _SignupPageState extends ConsumerState<SignupPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isLoading = ref.watch(authViewModelProvider)?.isLoading == true;
+    final isLoading = ref.watch(
+      authViewModelProvider.select((val) => val?.isLoading == true),
+    );
 
     ref.listen(authViewModelProvider, (_, next) {
       next?.when(
         data: (data) {
-          showSnackBar(context, 'Account created successfully! Please login');
-          Navigator.pushReplacement(
+          showSnackBar(context, 'Account created successfully! Please  login.');
+          Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const LoginPage()),
           );
         },
-        error: (error, stackTrace) {
+        error: (error, st) {
           showSnackBar(context, error.toString());
         },
         loading: () {},
@@ -52,7 +52,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
     });
 
     return Scaffold(
-      appBar: isKeyboardOpen ? null : AppBar(),
+      appBar: AppBar(),
       body:
           isLoading
               ? const Loader()
@@ -70,31 +70,22 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-
                       const SizedBox(height: 30),
-
-                      Column(
-                        spacing: 15,
-                        children: [
-                          CustomField(
-                            hintText: 'Name',
-                            controller: nameController,
-                          ),
-                          CustomField(
-                            hintText: 'Email',
-                            controller: emailController,
-                          ),
-                          CustomField(
-                            hintText: 'Password',
-                            isObscureText: true,
-                            controller: passwordController,
-                          ),
-                        ],
+                      CustomField(hintText: 'Name', controller: nameController),
+                      const SizedBox(height: 15),
+                      CustomField(
+                        hintText: 'Email',
+                        controller: emailController,
                       ),
-
+                      const SizedBox(height: 15),
+                      CustomField(
+                        hintText: 'Password',
+                        controller: passwordController,
+                        isObscureText: true,
+                      ),
                       const SizedBox(height: 20),
                       AuthGradientButton(
-                        buttonText: 'Sign Up',
+                        buttonText: 'Sign up',
                         onTap: () async {
                           if (formKey.currentState!.validate()) {
                             await ref
@@ -104,17 +95,18 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                                   email: emailController.text,
                                   password: passwordController.text,
                                 );
+                          } else {
+                            showSnackBar(context, 'Missing fields!');
                           }
                         },
                       ),
                       const SizedBox(height: 20),
-
                       GestureDetector(
                         onTap: () {
-                          Navigator.pushReplacement(
+                          Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => LoginPage(),
+                              builder: (context) => const LoginPage(),
                             ),
                           );
                         },
