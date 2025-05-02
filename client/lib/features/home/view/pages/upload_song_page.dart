@@ -143,12 +143,12 @@ class _UploadSongPageState extends ConsumerState<UploadSongPage> {
                         const SizedBox(height: 20),
                         CustomField(
                           hintText: 'Artist',
-                          controller: songNameController,
+                          controller: artistController,
                         ),
                         const SizedBox(height: 20),
                         CustomField(
                           hintText: 'Song Name',
-                          controller: artistController,
+                          controller: songNameController,
                         ),
                         const SizedBox(height: 20),
                         ColorPicker(
